@@ -1,4 +1,5 @@
-(function () {
+let main = () => (function () {
+    $("body").html("");
     var CSS = {
         arena: {
             width: 900,
@@ -71,12 +72,16 @@
     }
 
     function draw() {
+        if(!CONSTS.isStarted) {
+            $('<div><button onclick="showResults()" id="results">Sonuçları Gör</button></div>').appendTo('body');
+        }
         $('<div/>', {id: 'pong-game'}).css(CSS.arena).appendTo('body');
         $('<div/>', {id: 'pong-line'}).css(CSS.line).appendTo('#pong-game');
         $('<div/>', {id: 'pong-ball'}).css(CSS.ball).appendTo('#pong-game');
         $('<div/>', {id: 'stick-1'}).css($.extend(CSS.stick1, CSS.stick)).appendTo('#pong-game');
         $('<div/>', {id: 'stick-2'}).css($.extend(CSS.stick2, CSS.stick)).appendTo('#pong-game');
-        $('<div id="start-game">OYUNU BASLATMAK ICIN BOSLUK TUSUNA BAS!</div>').css(CSS.startGame).appendTo("#pong-game");
+        $('<div id="start-game">OYUNU BASLATMAK ICIN ENTER TUSUNA BAS!</div>').css(CSS.startGame).appendTo("#pong-game");
+        $("#results").css("fontSize", '24px');
     }
 
     function setEvents() {
@@ -93,7 +98,7 @@
             if (e.keyCode == 40) {
                 CONSTS.stick2Speed = $('#stick-2').position().top >= (CSS.arena.height - CSS.stick1.height) ? 0 : 5;
             }
-            if (e.keyCode == 32) {
+            if (e.keyCode == 13) {
                 if (!CONSTS.isStarted) {
                     $('#start-game').remove();
                     $(`<div id="scoreBoard"><div id="leftScore">${CONSTS.score1}</div><div id="rightScore">${CONSTS.score2}</div></div>`).appendTo('#pong-game');
@@ -179,3 +184,15 @@
 
     start();
 })();
+
+function showResults() {
+    $("body").html('<div><button onclick="main()" id="results">Geri Dön</button></div><table class="table"><thead class="thead-dark"><tr><th>Sol Takım</th><th>Sağ Takım</th></tr></thead><tbody></tbody></table>');
+    let localStorageData = JSON.parse(localStorage.getItem("matchResults"));
+    if (localStorageData != null) {
+        localStorageData.forEach(element => {
+            $(`<tr><td>${element.leftTeam}</td><td>${element.rightTeam}</td></tr>`).appendTo('tbody');
+        });
+    }
+}
+
+main();
